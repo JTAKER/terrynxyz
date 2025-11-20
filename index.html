@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOSEPH TERRYN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        :root {
+            --color-bg: #F0F0F0;
+            --color-ink: #050505;
+            --color-accent: #FF4500;
+            /* Marathon/Safety Orange */
+            --color-dim: #A0A0A0;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-ink);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+            /* Hiding default cursor for custom one */
+        }
+
+        /* Custom Cursor */
+        .cursor-crosshair {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--color-ink);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 4px;
+            background-color: var(--color-accent);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Typography Utilities */
+        .font-tech {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .text-outline {
+            color: transparent;
+            -webkit-text-stroke: 2px var(--color-ink);
+        }
+
+        /* Layout Utilities */
+        .section-wrapper {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            border-bottom: 2px solid var(--color-ink);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Glitch / Tech Animations */
+        .hover-accent:hover {
+            background-color: var(--color-ink);
+            color: var(--color-bg);
+        }
+
+        .hover-accent:hover .tech-detail {
+            color: var(--color-accent);
+        }
+
+        /* Grid Background for Texture */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image:
+                linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+        }
+
+        /* Portfolio Card Style */
+        .project-card {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 10px 10px 0px var(--color-accent);
+            border-color: var(--color-accent);
+        }
+
+        /* Utility decorations */
+        .barcode {
+            height: 1rem;
+            width: 100%;
+            background-image: linear-gradient(90deg,
+                    #000 0%, #000 5%,
+                    transparent 5%, transparent 10%,
+                    #000 10%, #000 15%,
+                    transparent 15%, transparent 18%,
+                    #000 18%, #000 30%,
+                    transparent 30%, transparent 35%,
+                    #000 35%, #000 60%,
+                    transparent 60%, transparent 70%,
+                    #000 70%, #000 100%);
+        }
+
+        /* Scroll Progress Line */
+        .scroll-line {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            height: 200px;
+            width: 2px;
+            background: #ddd;
+            transform: translateY(-50%);
+            z-index: 50;
+        }
+
+        .scroll-indicator {
+            width: 100%;
+            background: var(--color-accent);
+            height: 0%;
+            transition: height 0.1s;
+        }
+
+        /* Custom Animation for Background Shape */
+        @keyframes spin-slow {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .animate-spin-slow {
+            animation: spin-slow 30s linear infinite;
+        }
+    </style>
+</head>
+
+<body class="bg-grid">
+
+    <!-- Custom Cursor -->
+    <div class="cursor-crosshair" id="cursor-outer"></div>
+    <div class="cursor-dot" id="cursor-inner"></div>
+
+    <!-- HUD Overlay (Fixed Elements) -->
+    <div class="fixed inset-0 pointer-events-none z-50 p-6 flex flex-col justify-between mix-blend-darken">
+        <div class="flex justify-between items-start">
+            <div class="font-tech text-xs tracking-widest">
+                SYS.OP: NORMAL<br>
+                <span id="clock">00:00:00</span>
+            </div>
+        </div>
+        <div class="flex justify-between items-end">
+            <div class="font-tech text-xs">
+                COORD: 37°14′06″N, 115°48′40″W<br>
+                STATUS: ONLINE
+            </div>
+            <!-- Scroll Line Indicator -->
+            <div class="font-tech text-xs text-right">
+                SCROLL TO NAVIGATE<br>
+                [ v ]
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-line">
+        <div class="scroll-indicator" id="scroll-bar"></div>
+    </div>
+
+    <!-- SECTION 1: HERO -->
+    <main>
+        <section id="home" class="section-wrapper relative items-center">
+            <!-- Background Decorative Elements -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] h-full bg-black/10"></div>
+            <div class="absolute top-1/2 left-0 -translate-y-1/2 w-full h-[1px] bg-black/10"></div>
+
+            <!-- Main Content -->
+            <div class="relative z-10 text-center mix-blend-darken">
+                <div class="font-tech text-orange-600 text-sm tracking-[0.5em] mb-4 animate-pulse">
+                    // SUBJECT_ID
+                </div>
+                <h1 class="text-[15vw] leading-[0.8] font-black tracking-tighter uppercase select-none">
+                    Terr<span class="text-outline">y</span>n
+                </h1>
+                <div class="mt-8 flex justify-center items-center gap-4">
+                    <span class="h-[1px] w-12 bg-black"></span>
+                    <p class="font-tech text-lg uppercase tracking-widest">Full Stack Developer</p>
+                    <span class="h-[1px] w-12 bg-black"></span>
+                </div>
+
+                <!-- Decorative graphic -->
+                <div class="absolute right-[-10vw] top-[-10vh] opacity-20 animate-spin-slow">
+                    <svg width="300" height="300" viewBox="0 0 100 100">
+                        <path d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" fill="none" stroke="black"
+                            stroke-width="0.5" />
+                        <circle cx="50" cy="50" r="30" fill="none" stroke="black" stroke-width="0.5" />
+                        <line x1="50" y1="0" x2="50" y2="100" stroke="black" stroke-width="0.5" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: LINKS / COMMS -->
+        <section id="links" class="section-wrapper bg-white">
+            <div class="max-w-6xl mx-auto w-full px-6 grid grid-cols-1 md:grid-cols-2 h-full">
+
+                <!-- Left: Visual Header -->
+                <div class="border-r-2 border-black flex flex-col justify-center p-8 relative">
+                    <div class="font-tech text-orange-600 mb-4">/// COMMS_ARRAY</div>
+                    <h2 class="text-8xl font-black uppercase leading-none mb-6">Connect<br>Link<br>Sync</h2>
+                    <p class="font-mono text-sm max-w-xs text-gray-500 mt-4">
+                        Establish secure connection. Protocol V.42. Data encrypted.
+                    </p>
+                    <div class="barcode mt-12 opacity-50"></div>
+                </div>
+
+                <!-- Right: Links Grid -->
+                <div class="grid grid-rows-4">
+                    <!-- Github -->
+                    <a href="#" target="_blank"
+                        class="group border-b-2 border-black flex items-center justify-between px-8 hover:bg-black hover:text-white transition-colors duration-300 cursor-none">
+                        <span class="font-bold text-4xl uppercase">Github</span>
+                        <span
+                            class="font-tech text-xs opacity-0 group-hover:opacity-100 text-orange-500 transition-opacity">Repo_Access_Granted
+                            -></span>
+                    </a>
+                    <!-- Instagram -->
+                    <a href="#" target="_blank"
+                        class="group border-b-2 border-black flex items-center justify-between px-8 hover:bg-black hover:text-white transition-colors duration-300 cursor-none">
+                        <span class="font-bold text-4xl uppercase">Instagram</span>
+                        <span
+                            class="font-tech text-xs opacity-0 group-hover:opacity-100 text-orange-500 transition-opacity">Visual_Feed
+                            -></span>
+                    </a>
+                    <!-- Bluesky -->
+                    <a href="#" target="_blank"
+                        class="group border-b-2 border-black flex items-center justify-between px-8 hover:bg-black hover:text-white transition-colors duration-300 cursor-none">
+                        <span class="font-bold text-4xl uppercase">Bluesky</span>
+                        <span
+                            class="font-tech text-xs opacity-0 group-hover:opacity-100 text-orange-500 transition-opacity">Sky_Net_Protocol
+                            -></span>
+                    </a>
+                    <!-- Twitter -->
+                    <a href="#" target="_blank"
+                        class="group border-b-0 flex items-center justify-between px-8 hover:bg-black hover:text-white transition-colors duration-300 cursor-none">
+                        <span class="font-bold text-4xl uppercase">Twitter</span>
+                        <span
+                            class="font-tech text-xs opacity-0 group-hover:opacity-100 text-orange-500 transition-opacity">Short_Burst_Trans
+                            -></span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PORTFOLIO -->
+        <section id="portfolio" class="section-wrapper bg-[#E5E5E5]">
+            <div class="absolute top-0 left-0 p-6 font-tech text-xs">/// ARCHIVE_DATA</div>
+
+            <div class="container mx-auto px-6 py-20">
+                <h2 class="text-6xl font-black uppercase mb-16 border-l-[10px] border-orange-600 pl-6">
+                    Deployment<br>History
+                </h2>
+
+                <!-- Projects Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                    <!-- Project 1 -->
+                    <div class="project-card bg-white border-2 border-black p-4 flex flex-col h-full">
+                        <!-- Placeholder for Screenshot -->
+                        <div class="w-full h-48 bg-black relative mb-6 overflow-hidden group">
+                            <div
+                                class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500">
+                            </div>
+                            <div
+                                class="absolute top-2 right-2 bg-orange-600 text-white font-tech text-[10px] px-2 py-1">
+                                SECURE</div>
+                            <!-- Grid overlay -->
+                            <div
+                                class="absolute inset-0 bg-[linear-gradient(transparent_2px,rgba(0,0,0,0.8)_2px)] bg-[length:100%_4px] pointer-events-none opacity-20">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-baseline border-b-2 border-black pb-2 mb-4">
+                            <h3 class="text-2xl font-bold uppercase">Cyber_Dash</h3>
+                            <span class="font-tech text-xs">2024</span>
+                        </div>
+                        <p class="font-mono text-sm text-gray-600 mb-6 flex-grow">
+                            A high-performance dashboard for financial analytics. Features real-time WebSocket data
+                            streams and WebGL graphing.
+                        </p>
+                        <a href="#" target="_blank"
+                            class="block w-full py-3 bg-black text-white text-center font-tech text-xs hover:bg-orange-600 transition-colors uppercase tracking-widest">
+                            Initialize Link
+                        </a>
+                    </div>
+
+                    <!-- Project 2 -->
+                    <div class="project-card bg-white border-2 border-black p-4 flex flex-col h-full">
+                        <div class="w-full h-48 bg-black relative mb-6 overflow-hidden group">
+                            <div
+                                class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1614064641938-3e821efd85bd?q=80&w=2574&auto=format&fit=crop')] bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500">
+                            </div>
+                            <div
+                                class="absolute top-2 right-2 bg-orange-600 text-white font-tech text-[10px] px-2 py-1">
+                                PUBLIC</div>
+                            <div
+                                class="absolute inset-0 bg-[linear-gradient(transparent_2px,rgba(0,0,0,0.8)_2px)] bg-[length:100%_4px] pointer-events-none opacity-20">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-baseline border-b-2 border-black pb-2 mb-4">
+                            <h3 class="text-2xl font-bold uppercase">Neon_Commerce</h3>
+                            <span class="font-tech text-xs">2023</span>
+                        </div>
+                        <p class="font-mono text-sm text-gray-600 mb-6 flex-grow">
+                            Headless e-commerce frontend built with Next.js. Brutalist aesthetic with heavy focus on
+                            micro-interactions.
+                        </p>
+                        <a href="#" target="_blank"
+                            class="block w-full py-3 bg-black text-white text-center font-tech text-xs hover:bg-orange-600 transition-colors uppercase tracking-widest">
+                            Initialize Link
+                        </a>
+                    </div>
+
+                    <!-- Project 3 -->
+                    <div class="project-card bg-white border-2 border-black p-4 flex flex-col h-full">
+                        <div class="w-full h-48 bg-black relative mb-6 overflow-hidden group">
+                            <div
+                                class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500">
+                            </div>
+                            <div
+                                class="absolute top-2 right-2 bg-orange-600 text-white font-tech text-[10px] px-2 py-1">
+                                CLASSIFIED</div>
+                            <div
+                                class="absolute inset-0 bg-[linear-gradient(transparent_2px,rgba(0,0,0,0.8)_2px)] bg-[length:100%_4px] pointer-events-none opacity-20">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-baseline border-b-2 border-black pb-2 mb-4">
+                            <h3 class="text-2xl font-bold uppercase">Core_System</h3>
+                            <span class="font-tech text-xs">2023</span>
+                        </div>
+                        <p class="font-mono text-sm text-gray-600 mb-6 flex-grow">
+                            Internal design system and component library. Fully accessible, strictly typed, and visually
+                            austere.
+                        </p>
+                        <a href="#" target="_blank"
+                            class="block w-full py-3 bg-black text-white text-center font-tech text-xs hover:bg-orange-600 transition-colors uppercase tracking-widest">
+                            Initialize Link
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Footer graphic -->
+            <div class="absolute bottom-0 right-0 p-4 opacity-30">
+                <svg width="100" height="100">
+                    <rect x="10" y="10" width="20" height="20" fill="black" />
+                    <rect x="40" y="10" width="20" height="20" fill="black" />
+                    <rect x="10" y="40" width="20" height="20" fill="black" />
+                    <rect x="40" y="40" width="20" height="80" fill="var(--color-accent)" />
+                </svg>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Custom Cursor Logic
+        const cursorOuter = document.getElementById('cursor-outer');
+        const cursorInner = document.getElementById('cursor-inner');
+        const links = document.querySelectorAll('a, button, .project-card');
+
+        document.addEventListener('mousemove', (e) => {
+            cursorOuter.style.top = e.clientY + 'px';
+            cursorOuter.style.left = e.clientX + 'px';
+            cursorInner.style.top = e.clientY + 'px';
+            cursorInner.style.left = e.clientX + 'px';
+        });
+
+        document.addEventListener('mousedown', () => {
+            cursorOuter.style.width = '30px';
+            cursorOuter.style.height = '30px';
+            cursorOuter.style.backgroundColor = 'rgba(255, 69, 0, 0.2)';
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursorOuter.style.width = '40px';
+            cursorOuter.style.height = '40px';
+            cursorOuter.style.backgroundColor = 'transparent';
+        });
+
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursorOuter.style.borderColor = 'var(--color-accent)';
+                cursorOuter.style.transform = 'translate(-50%, -50%) rotate(45deg)';
+                cursorOuter.style.borderRadius = '0%'; // Make it square
+            });
+            link.addEventListener('mouseleave', () => {
+                cursorOuter.style.borderColor = 'var(--color-ink)';
+                cursorOuter.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+                cursorOuter.style.borderRadius = '50%';
+            });
+        });
+
+        // Clock
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Scroll Indicator
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scroll-bar').style.height = scrolled + '%';
+        });
+
+        // Observer for Fade-in elements (optional polish)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-10');
+                }
+            });
+        });
+
+        // Apply to projects
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-10');
+            observer.observe(card);
+        });
+
+    </script>
+</body>
+
+</html>
